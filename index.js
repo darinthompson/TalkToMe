@@ -1,5 +1,8 @@
 <<<<<<< HEAD
 import dotenv from 'dotenv';
+=======
+import dotnev from 'dotenv';
+>>>>>>> f81b56a (Set up and getting sample user data)
 import morgan from 'morgan';
 import express from 'express';
 import bodyParser from "body-parser";
@@ -13,8 +16,16 @@ import express from 'express';
 import bodyParser from "body-parser";
 import {createClient} from '@supabase/supabase-js'
 
+<<<<<<< HEAD
 dotnev.config()
 >>>>>>> 40f68be (Set up and getting sample user data)
+=======
+<<<<<<< HEAD
+dotenv.config()
+=======
+dotnev.config()
+>>>>>>> f81b56a (Set up and getting sample user data)
+>>>>>>> bebb433 (Set up and getting sample user data)
 const app = express();
 
 
