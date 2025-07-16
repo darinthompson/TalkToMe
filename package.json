@@ -1,7 +1,10 @@
 {
   "name": "talktome",
   "version": "1.0.0",
+<<<<<<< HEAD
   "type": "module",
+=======
+>>>>>>> 40f68be (Set up and getting sample user data)
   "description": "Capstone Project",
   "main": "index.js",
   "scripts": {
@@ -11,11 +14,15 @@
   "author": "Team TalkToMe",
   "license": "ISC",
   "dependencies": {
+<<<<<<< HEAD
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "morgan": "^1.10.1",
     "nodemon": "^3.1.10",
     "openai": "^5.12.2"
+=======
+    "dotenv": "^17.2.0"
+>>>>>>> 40f68be (Set up and getting sample user data)
   },
   "devDependencies": {
     "i": "^0.3.7",
