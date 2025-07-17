@@ -11,6 +11,9 @@ const app = express();
 
 app.use(morgan('combined'));
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
 const supabase = createClient(process.env.PROJECT_URL, process.env.API_KEY);
 
 app.get('/users', async (req, res) => {
