@@ -1,10 +1,10 @@
-import dotnev from 'dotenv';
+import dotenv from 'dotenv';
 import morgan from 'morgan';
 import express from 'express';
 import bodyParser from "body-parser";
 import {createClient} from '@supabase/supabase-js'
 
-dotnev.config()
+dotenv.config()
 const app = express();
 
 
