@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 
-export default function RegisterScreen({ onSubmit }: { onSubmit: () => void }) {
+export default function RegisterScreen() {
+  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -17,56 +23,59 @@ export default function RegisterScreen({ onSubmit }: { onSubmit: () => void }) {
       return;
     }
     setError('');
-    onSubmit();
+    router.replace('/main');
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>Create Account</ThemedText>
+    <ThemedView style={[styles.container, isDark && { backgroundColor: '#151718' }]}> 
+      <ThemedText type="title" style={[styles.title, isDark && { color: '#fff' }]}>Create Account</ThemedText>
       <TextInput
-        style={styles.input}
+        style={[styles.input, isDark && styles.inputDark]}
         placeholder="Username"
         value={username}
         autoCapitalize="none"
         onChangeText={setUsername}
-        placeholderTextColor="#888"
+        placeholderTextColor={isDark ? "#aaa" : "#888"}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, isDark && styles.inputDark]}
         placeholder="First Name"
         value={firstName}
         autoCapitalize="words"
         onChangeText={setFirstName}
-        placeholderTextColor="#888"
+        placeholderTextColor={isDark ? "#aaa" : "#888"}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, isDark && styles.inputDark]}
         placeholder="Last Name"
         value={lastName}
         autoCapitalize="words"
         onChangeText={setLastName}
-        placeholderTextColor="#888"
+        placeholderTextColor={isDark ? "#aaa" : "#888"}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, isDark && styles.inputDark]}
         placeholder="Email"
         value={email}
         autoCapitalize="none"
         keyboardType="email-address"
         onChangeText={setEmail}
-        placeholderTextColor="#888"
+        placeholderTextColor={isDark ? "#aaa" : "#888"}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, isDark && styles.inputDark]}
         placeholder="Password"
         value={password}
         secureTextEntry
         onChangeText={setPassword}
-        placeholderTextColor="#888"
+        placeholderTextColor={isDark ? "#aaa" : "#888"}
       />
       {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <ThemedText style={styles.buttonText}>Submit</ThemedText>
+        <ThemedText style={styles.buttonText}>Register</ThemedText>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push('/')}> 
+        <ThemedText style={[styles.link, isDark && { color: '#4fc3f7' }]}>Already have an account? Login</ThemedText>
       </TouchableOpacity>
     </ThemedView>
   );
@@ -84,6 +93,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 24,
     textAlign: 'center',
+    color: '#11181C',
   },
   input: {
     borderWidth: 0,
@@ -92,10 +102,15 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     fontSize: 16,
+    color: '#11181C',
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
+  },
+  inputDark: {
+    backgroundColor: '#222',
+    color: '#fff',
   },
   button: {
     backgroundColor: '#0a7ea4',
@@ -118,5 +133,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: -8,
     textAlign: 'center',
+  },
+  link: {
+    color: '#0a7ea4',
+    marginTop: 16,
+    textAlign: 'center',
+    fontSize: 16
   },
 });
