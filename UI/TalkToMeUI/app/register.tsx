@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { registerUser } from './utils/supabaseClient';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -17,12 +18,17 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!username || !firstName || !lastName || !email || !password) {
       setError('Please fill out all fields.');
       return;
     }
     setError('');
+    const result = await registerUser({ username, firstName, lastName, email, password });
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
     router.replace('/main');
   };
 
