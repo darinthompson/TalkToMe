@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { loginUser } from './utils/supabaseClient';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -23,16 +25,26 @@ export default function LoginScreen() {
     isDark && { color: '#4fc3f7' }
   ];
 
+  const handleLogin = async () => {
+    setError('');
+    const result = await loginUser({ username, password });
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+    router.replace('/main');
+  };
+
   return (
     <View style={[styles.container, isDark && { backgroundColor: '#151718' }]}> 
       <Text style={titleStyle}>Login</Text>
       <TextInput
         style={inputStyle}
-        placeholder="Email"
+        placeholder="Username"
         placeholderTextColor={isDark ? "#aaa" : "#888"}
         autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
+        value={username}
+        onChangeText={setUsername}
       />
       <TextInput
         style={inputStyle}
@@ -42,7 +54,8 @@ export default function LoginScreen() {
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity style={styles.button} onPress={() => router.replace('/main')}>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => router.push('/register')}>
@@ -76,5 +89,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 18,
+  },
+  error: {
+    color: '#e74c3c',
+    marginTop: 8,
+    marginBottom: -8,
+    textAlign: 'center',
   },
 });
