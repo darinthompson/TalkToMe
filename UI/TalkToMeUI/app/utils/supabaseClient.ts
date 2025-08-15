@@ -45,7 +45,11 @@ export async function loginUser({ username, password }) {
   console.log('Login result:', { data, error });
 =======
   console.log('userId:', { data, error });
+<<<<<<< HEAD
 >>>>>>> 4aa0795 (adding .env functionality)
+=======
+>>>>>>> 74c9d73 (adding .env functionality)
+>>>>>>> 8950ac3 (adding .env functionality)
   const { idData, idError } = await supabase
     .from('User')
     .select('id')
