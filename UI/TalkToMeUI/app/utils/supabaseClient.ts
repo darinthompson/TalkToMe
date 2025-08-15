@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'https://tftasaprvaftoqarrpkc.supabase.co';
-const SUPABASE_ANON_KEY = 'API_KEY';
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -41,7 +41,13 @@ export async function loginUser({ username, password }) {
     .eq('username', username)
     .eq('password', password)
     .single();
-  console.log('Login result:', { data, error });
+  console.log('userId:', { data, error });
+  const { idData, idError } = await supabase
+    .from('User')
+    .select('id')
+    .eq('username', username)
+    .single();
+  console.log('userId result:', { idData, idError });
   if (error || !data) {
     return { error: 'Incorrect username or password.' };
   }
