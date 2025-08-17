@@ -41,7 +41,7 @@ export async function loginUser({ username, password }) {
     .eq('username', username)
     .eq('password', password)
     .single();
-  console.log('userId:', { data, error });
+  console.log('Login result:', { data, error });
   const { idData, idError } = await supabase
     .from('User')
     .select('id')
