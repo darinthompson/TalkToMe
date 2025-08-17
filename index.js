@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import express from 'express';
 import bodyParser from "body-parser";
 import openAIRoutes from './Routes/openAIRoutes.js'
+<<<<<<< HEAD
 
 dotenv.config()
 =======
@@ -15,6 +16,8 @@ import morgan from 'morgan';
 import express from 'express';
 import bodyParser from "body-parser";
 import {createClient} from '@supabase/supabase-js'
+=======
+>>>>>>> 8483b22 (built simple back-end to consume openAPI request)
 
 <<<<<<< HEAD
 dotnev.config()
@@ -35,6 +38,7 @@ app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 app.use('/api/ai', openAIRoutes);
 const supabase = createClient(process.env.SUPABASE_PROJECT_URL, process.env.SUPABASE_API_KEY);
@@ -58,6 +62,13 @@ app.get('/users', async (req, res) => {
 
     res.json(data);
 >>>>>>> 40f68be (Set up and getting sample user data)
+=======
+app.use('/api/ai', openAIRoutes);
+
+app.use((err, _req, res, _next) => {
+  console.error('Unhandled error:', err);
+  res.status(err.status || 500).json({ error: err.message || 'Server error' });
+>>>>>>> 8483b22 (built simple back-end to consume openAPI request)
 });
 
 
