@@ -14,7 +14,7 @@ app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-const supabase = createClient(process.env.PROJECT_URL, process.env.API_KEY);
+const supabase = createClient(process.env.SUPABASE_PROJECT_URL, process.env.SUPABASE_API_KEY);
 
 app.get('/users', async (req, res) => {
     const { data, error } = await supabase
