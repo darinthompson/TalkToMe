@@ -40,6 +40,7 @@ app.use(bodyParser.json());
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 app.use('/api/ai', openAIRoutes);
 const supabase = createClient(process.env.SUPABASE_PROJECT_URL, process.env.SUPABASE_API_KEY);
 
@@ -63,7 +64,12 @@ app.get('/users', async (req, res) => {
     res.json(data);
 >>>>>>> 40f68be (Set up and getting sample user data)
 =======
+=======
+>>>>>>> bb38ab5 (added .gitignore about to fix the api key issue)
 app.use('/api/ai', openAIRoutes);
+=======
+const supabase = createClient(process.env.SUPABASE_PROJECT_URL, process.env.SUPABASE_API_KEY);
+>>>>>>> 4854003 (added .gitignore about to fix the api key issue)
 
 app.use((err, _req, res, _next) => {
   console.error('Unhandled error:', err);
