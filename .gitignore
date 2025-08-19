@@ -1,23 +1,29 @@
-# OS files
+# OS generated files
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+logs/
 
 # Environment files
 .env
 .env.local
+.env.*.local
 *.env
 
-# Dependency directories
+# Node.js
 node_modules/
-venv/
+npm-debug.log
+yarn-error.log
+
+# Python
 __pycache__/
 *.pyc
-
-# Build outputs
-dist/
-build/
-coverage/
-*.log
+*.pyo
+*.pyd
+.venv/
+venv/
 
 # Go
 bin/
@@ -25,11 +31,17 @@ bin/
 *.test
 *.out
 
-# IDE/editor stuff
+# Build outputs
+dist/
+build/
+out/
+coverage/
+
+# IDE / Editor files
 .vscode/
 .idea/
 *.swp
 
-# Misc
+# Backup / Temp files
 *.bak
 *.tmp

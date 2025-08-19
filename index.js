@@ -15,6 +15,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.use('/api/ai', openAIRoutes);
+const supabase = createClient(process.env.SUPABASE_PROJECT_URL, process.env.SUPABASE_API_KEY);
+
 
 app.use((err, _req, res, _next) => {
   console.error('Unhandled error:', err);
