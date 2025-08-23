@@ -3,22 +3,23 @@ import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// User table helpers
-export async function registerUser({ username, firstName, lastName, email, password }) {
-  console.log('registerUser called:', { username, firstName, lastName, email });
-  // Check if username exists
-  const { data: existing, error: existError } = await supabase
+const insertPrompt = async ({ user_journal, user_response, user_mood, user_id }) => {
+  return await supabase.from('Prompt').insert([
+    { user_journal, user_response, user_mood, user_id }
+  ]);
+};
+
+const registerUser = async ({ username, firstName, lastName, email, password }) => {
+  const { data: existing } = await supabase
     .from('User')
     .select('id')
     .eq('username', username)
     .single();
-  console.log('Check username result:', { existing, existError });
   if (existing) {
     return { error: 'Username already exists.' };
   }
-  // Insert new user
   const { data, error } = await supabase
     .from('User')
     .insert([
@@ -26,38 +27,42 @@ export async function registerUser({ username, firstName, lastName, email, passw
     ])
     .select()
     .single();
-  console.log('Insert user result:', { data, error });
   if (error) {
     return { error: error.message };
   }
-  return { data };
-}
+  // Return flat user info
+  return {
+    id: data.id,
+    username: data.username,
+    firstName: data.first_name,
+    lastName: data.last_name,
+    email: data.email
+  };
+};
 
-export async function loginUser({ username, password }) {
-  console.log('loginUser called:', { username });
+const loginUser = async ({ username, password }) => {
   const { data, error } = await supabase
     .from('User')
     .select('*')
     .eq('username', username)
     .eq('password', password)
     .single();
-<<<<<<< HEAD
-  console.log('Login result:', { data, error });
-=======
-  console.log('userId:', { data, error });
-<<<<<<< HEAD
->>>>>>> 4aa0795 (adding .env functionality)
-=======
->>>>>>> 74c9d73 (adding .env functionality)
->>>>>>> 8950ac3 (adding .env functionality)
-  const { idData, idError } = await supabase
-    .from('User')
-    .select('id')
-    .eq('username', username)
-    .single();
-  console.log('userId result:', { idData, idError });
   if (error || !data) {
     return { error: 'Incorrect username or password.' };
   }
-  return { data };
-}
+  // Return flat user info
+  return {
+    id: data.id,
+    username: data.username,
+    firstName: data.first_name,
+    lastName: data.last_name,
+    email: data.email
+  };
+};
+
+export default {
+  supabase,
+  insertPrompt,
+  registerUser,
+  loginUser
+};
