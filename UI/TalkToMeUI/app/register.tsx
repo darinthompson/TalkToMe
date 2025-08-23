@@ -2,9 +2,30 @@ import { useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
+
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { registerUser } from './utils/supabaseClient';
+import { Platform } from 'react-native';
+// Use fetch to call backend API. Use env variable for base URL for team compatibility.
+const API_BASE =
+  Platform.OS === 'android'
+    ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
+    : Platform.OS === 'web'
+      ? process.env.EXPO_PUBLIC_API_BASE_WEB || 'http://localhost:3000'
+      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'http://127.0.0.1:3001';
+
+async function registerUser({ username, firstName, lastName, email, password }: { username: string; firstName: string; lastName: string; email: string; password: string }) {
+  try {
+    const res = await fetch(`${API_BASE}/api/user/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, firstName, lastName, email, password })
+    });
+    return await res.json();
+  } catch (err) {
+    return { error: 'Registration failed.' };
+  }
+}
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -28,6 +49,14 @@ export default function RegisterScreen() {
     if (result.error) {
       setError(result.error);
       return;
+    }
+    // Store user_id globally if returned
+    if (typeof window !== 'undefined' && result.id) {
+      localStorage.setItem('user_id', result.id); // for web
+      console.log('Stored user_id in localStorage:', result.id);
+    } else if (result.id) {
+      (globalThis as any).user_id = result.id; // fallback for native
+      console.log('Stored user_id in globalThis:', result.id);
     }
     router.replace('/main');
   };

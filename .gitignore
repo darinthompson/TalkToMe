@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 # OS generated files
+=======
+<<<<<<< HEAD
+# OS files
+>>>>>>> e63923e (fixing api key leak issue)
 .DS_Store
 Thumbs.db
 
@@ -20,10 +25,39 @@ yarn-error.log
 # Python
 __pycache__/
 *.pyc
+<<<<<<< HEAD
 *.pyo
 *.pyd
 .venv/
 venv/
+=======
+=======
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+>>>>>>> 6d660ca (fixing api key leak issue)
+
+# Build outputs
+dist/
+build/
+<<<<<<< HEAD
+coverage/
+*.log
+>>>>>>> e63923e (fixing api key leak issue)
 
 # Go
 bin/
@@ -31,6 +65,7 @@ bin/
 *.test
 *.out
 
+<<<<<<< HEAD
 # Build outputs
 dist/
 build/
@@ -38,10 +73,34 @@ out/
 coverage/
 
 # IDE / Editor files
+=======
+# IDE/editor stuff
+=======
+out/
+
+# IDE / Editor files
+>>>>>>> 6d660ca (fixing api key leak issue)
+>>>>>>> e63923e (fixing api key leak issue)
 .vscode/
 .idea/
 *.swp
 
+<<<<<<< HEAD
 # Backup / Temp files
+=======
+<<<<<<< HEAD
+# Misc
+=======
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Backup files
+>>>>>>> 6d660ca (fixing api key leak issue)
+>>>>>>> e63923e (fixing api key leak issue)
 *.bak
 *.tmp
