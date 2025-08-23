@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { generateResponse } from '../Controllers/openAPIController.js';
+import { generateResponse } from '../controllers/openAPIController.js';
 
 const router = Router();
 

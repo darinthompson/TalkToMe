@@ -20,8 +20,13 @@
   "dependencies": {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 8483b22 (built simple back-end to consume openAPI request)
+=======
+    "@supabase/supabase-js": "^2.55.0",
+    "cors": "^2.8.5",
+>>>>>>> 931f1a3 (WIP: save progress before rebase)
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "morgan": "^1.10.1",

@@ -1,4 +1,4 @@
-import { askOpenAI } from '../Services/openAPIService.js';
+import openAPIService from '../services/openAPIService.js';
 
 export async function generateResponse(req, res, next) {
   try {
@@ -8,7 +8,7 @@ export async function generateResponse(req, res, next) {
       return res.status(400).json({ error: 'Missing or invalid "prompt" (string required)' });
     }
 
-    const text = await askOpenAI(prompt.trim());
+    const text = await openAPIService.getAIResponse(prompt.trim());
     return res.json({ text });
   } catch (err) {
     return next(err);

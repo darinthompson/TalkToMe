@@ -1,6 +1,13 @@
 {
+  "allowJs": true,
+  "checkJs": false,
+  "include": [
+    "frontend/**/*",
+    "backend/**/*"
+, "app/(tabs)", "app/_layout.tsx", "app/+not-found.tsx", "app/index.tsx", "app/jounral-entry.tsx", "app/journal.tsx", "app/main.tsx", "app/register.tsx", "../../backend/controllers/userController.js", "../../backend/controllers/openAPIController.js", "../../backend/routes/openAIRoutes.js", "../../backend/services/openAPIService.js"  ],
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "allowJs": true,
     "strict": true,
     "paths": {
       "@/*": [
