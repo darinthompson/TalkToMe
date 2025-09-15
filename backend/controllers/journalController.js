@@ -35,6 +35,27 @@ async function submitJournal(req, res) {
   }
 }
 
+
+export const fetchMoodHistory = async (req, res) => {
+  const { user_id } = req.params;
+
+  if (!user_id || typeof user_id !== 'string') {
+    return res.status(400).json({ error: 'Missing or invalid user id.' });
+  }
+
+  try {
+    const { data, error } = await supabaseClient.fetchMoodHistoryByUserId(user_id);
+
+    if (error) {
+      return res.status(500).json({ error: error.message ?? 'Database error.' });
+    }
+    return res.status(200).json({ data: data });
+  } catch (e) {
+    return res.status(500).json({ error: 'Unexpected server error.' });
+  }
+}
+
 export default {
+  fetchMoodHistory,
   submitJournal
 };

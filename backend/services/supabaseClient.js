@@ -11,6 +11,20 @@ const insertPrompt = async ({ user_journal, user_response, user_mood, user_id })
   ]);
 };
 
+const fetchMoodHistoryByUserId = async (user_id) => {
+  const {data, error} = await supabase
+    .from('Prompt')
+    .select('*')
+    .eq('user_id', user_id);
+
+    if(!data || error) {
+      return {error: error.message}
+    }
+
+    return {data: data ?? [], error};
+
+}
+
 const registerUser = async ({ username, firstName, lastName, email, password }) => {
   const { data: existing } = await supabase
     .from('User')
@@ -64,5 +78,6 @@ export default {
   supabase,
   insertPrompt,
   registerUser,
-  loginUser
+  loginUser,
+  fetchMoodHistoryByUserId
 };
