@@ -45,3 +45,6 @@ coverage/
 # Backup / Temp files
 *.bak
 *.tmp
+
+# Local Expo State
+.expo/

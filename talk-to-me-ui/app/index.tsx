@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -59,7 +60,8 @@ export default function LoginScreen() {
       localStorage.setItem('user_id', result.id); // for web
       console.log('Stored user_id in localStorage:', result.id);
     } else if (result.id) {
-      (globalThis as any).user_id = result.id; // fallback for native
+      // (globalThis as any).user_id = result.id; // fallback for native
+      await AsyncStorage.setItem('user_id', result.id);
       console.log('Stored user_id in globalThis:', result.id);
     }
     router.replace('/main');
