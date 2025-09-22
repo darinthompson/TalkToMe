@@ -19,16 +19,32 @@ export default function MainScreen() {
       </ThemedText>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => router.push('/journal')}>
-          <ThemedText style={styles.buttonText}>Write Journal Entry</ThemedText>
+            <Image
+                source={  require('../assets/images/FullLogo_Transparent journal1.png')}
+                style={styles.journal}
+            />
+          {/*<ThemedText style={styles.buttonText}>Write Journal Entry</ThemedText>*/}
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => router.push('/history')}>
-          <ThemedText style={styles.buttonText}>View Mood History</ThemedText>
+            <Image
+                source={  require('../assets/images/fulllogo_transparent_nobuffer mood3.png')}
+                style={styles.mood}
+            />
+          {/*<ThemedText style={styles.buttonText}>View Mood History</ThemedText>*/}
         </TouchableOpacity>
-          <TouchableOpacity style={styles.button1} onPress={() => router.push('/Chat')}>
-              <ThemedText style={styles.buttonText}>Chat</ThemedText>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('/Chat')}>
+              <Image
+                  source={  require('../assets/images/fulllogo_transparent_nobuffer chat3.png')}
+                  style={styles.chatImage}
+                  />
+              {/*<ThemedText style={styles.buttonText}>Chat</ThemedText>*/}
           </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => router.push('/settings')}>
-          <ThemedText style={styles.buttonText}>Settings</ThemedText>
+            <Image
+                source={  require('../assets/images/fulllogo_transparent_nobuffer settings3.png')}
+                style={styles.setting}
+            />
+          {/*<ThemedText style={styles.buttonText}>Settings</ThemedText>*/}
             </TouchableOpacity>
 
       </View>
@@ -44,7 +60,7 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 18, color: '#687076', marginBottom: 32, textAlign: 'center' },
   buttonContainer: { gap: 16 ,flexDirection:'row', justifyContent:'center',padding:10},
   button: {width:300,height:300,
-    backgroundColor: '#0a7ea4',
+    backgroundColor: '#0e0c0c',
     paddingVertical: 16,
     borderRadius: 12,
     alignSelf: 'center',
@@ -64,6 +80,30 @@ const styles = StyleSheet.create({
         marginBottom: 200,
         marginTop:-130
       },
+    chatImage:
+        {
+            width:300,
+            height:250,
+            resizeMode:'contain'
+        },
+    journal:
+        {
+            width:300,
+            height:250,
+            resizeMode:'contain'
+        },
+    mood:
+        {
+            width:300,
+            height:200,
+            resizeMode:'contain'
+        },
+    setting:
+        {
+            width:300,
+            height:200,
+            resizeMode:'contain'
+        },
   header: {
     height: 60,
     justifyContent: 'center',
