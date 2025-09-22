@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Image,Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Platform } from 'react-native';
-// Use fetch to call backend API. Use env variable for base URL for team compatibility.
+
 const API_BASE =
   Platform.OS === 'android'
     ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
@@ -65,45 +63,87 @@ export default function LoginScreen() {
     router.replace('/main');
   };
 
+
   return (
-    <View style={[styles.container, isDark && { backgroundColor: '#151718' }]}> 
-      <Text style={titleStyle}>Login</Text>
-      <TextInput
-        style={inputStyle}
-        placeholder="Username"
-        placeholderTextColor={isDark ? "#aaa" : "#888"}
-        autoCapitalize="none"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={inputStyle}
-        placeholder="Password"
-        placeholderTextColor={isDark ? "#aaa" : "#888"}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/register')}>
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/reset-password')}>
-        <Text style={linkStyle}>Forgot password? Reset here</Text>
-      </TouchableOpacity>
-    </View>
+      <View style={[styles.container, isDark && { backgroundColor: '#151718' }]}>
+
+        <View style={styles.header}>
+          <Text style={styles.headerText}>TalkToMe</Text>
+        </View>
+
+        <Image
+            source={require('../assets/images/fulllogo_transparent_nobuffer.png')}
+            style={styles.logo}
+        />
+
+        <Text style={titleStyle}>Login</Text>
+
+        <TextInput
+            style={inputStyle}
+            placeholder="Username"
+            placeholderTextColor={isDark ? '#aaa' : '#888'}
+            autoCapitalize="none"
+            value={username}
+            onChangeText={setUsername}
+        />
+        <TextInput
+            style={inputStyle}
+            placeholder="Password"
+            placeholderTextColor={isDark ? '#aaa' : '#888'}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+        />
+
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/register')}>
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push('/reset-password')}>
+          <Text style={linkStyle}>Forgot password? Reset here</Text>
+        </TouchableOpacity>
+      </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 32 },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
+  background: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    zIndex: -1,
+  },
   title: { fontSize: 28, fontWeight: 'bold', marginBottom: 24, textAlign: 'center', color: '#11181C' },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, marginBottom: 16, color: '#11181C', backgroundColor: '#fff' },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    color: '#11181C',
+    backgroundColor: '#fff',
+    width: '100%',
+    maxWidth: 500,
+  },
   inputDark: { backgroundColor: '#222', color: '#fff' },
   link: { color: '#0a7ea4', marginTop: 16, textAlign: 'center', fontSize: 16 },
+  header: {
+    height: 60,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(1,8,11,0.8)',
+    position: 'absolute',
+    top: 0,
+    zIndex: 10,
+  },
+  headerText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   button: {
     backgroundColor: '#0a7ea4',
     paddingVertical: 16,
@@ -114,16 +154,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 3,
+    width: '100%',
+    maxWidth: 500,
   },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  error: {
-    color: '#e74c3c',
-    marginTop: 8,
-    marginBottom: -8,
-    textAlign: 'center',
+  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 18 },
+  error: { color: '#e74c3c', marginTop: 8, marginBottom: -8, textAlign: 'center' },
+  logo: {
+    width: 300,
+    height: 300,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 40,
+    marginTop: 40,
   },
 });

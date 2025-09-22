@@ -11,16 +11,21 @@
   "author": "Team TalkToMe",
   "license": "ISC",
   "dependencies": {
-  "@supabase/supabase-js": "^2.55.0",
-  "cors": "^2.8.5",
-  "dotenv": "^17.2.0",
-  "express": "^5.1.0",
-  "morgan": "^1.10.1",
-  "nodemon": "^3.1.10",
-  "openai": "^5.12.2"
+    "@supabase/supabase-js": "^2.55.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "expo": "^54.0.6",
+    "express": "^5.1.0",
+    "morgan": "^1.10.1",
+    "nodemon": "^3.1.10",
+    "openai": "^5.12.2",
+    "react-dom": "19.1.0",
+    "react-native-web": "^0.21.0"
   },
   "devDependencies": {
     "i": "^0.3.7",
-    "supabase": "^2.31.4"
+    "supabase": "^2.31.4",
+    "typescript": "~5.9.2",
+    "@types/react": "~19.1.10"
   }
 }

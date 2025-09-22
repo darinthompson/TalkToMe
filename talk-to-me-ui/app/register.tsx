@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import {StyleSheet, TextInput, TouchableOpacity, View, Image, Text} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -62,7 +62,14 @@ export default function RegisterScreen() {
   };
 
   return (
-    <ThemedView style={[styles.container, isDark && { backgroundColor: '#151718' }]}> 
+    <ThemedView style={[styles.container, isDark && { backgroundColor: '#151718' }]}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>TalkToMe</Text>
+      </View>
+      <Image
+          source={require('../assets/images/fulllogo_transparent_nobuffer.png')}
+          style={styles.logo}
+      />
       <ThemedText type="title" style={[styles.title, isDark && { color: '#fff' }]}>Create Account</ThemedText>
       <TextInput
         style={[styles.input, isDark && styles.inputDark]}
@@ -122,6 +129,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 32,
     backgroundColor: '#f7f8fa',
+    alignItems:'center',
   },
   title: {
     fontSize: 28,
@@ -142,6 +150,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
+    width:500,
+
   },
   inputDark: {
     backgroundColor: '#222',
@@ -157,6 +167,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 3,
+    width: 500,
   },
   buttonText: {
     color: '#fff',
@@ -175,4 +186,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16
   },
+  header: {
+    height: 50,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: 'rgba(1,8,11,0.8)',
+    position:'absolute',
+    top:0,
+    zIndex:10,
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  logo:
+      {
+        width:300,
+        height:300,
+        resizeMode: 'contain',
+        alignSelf: 'center',
+        marginBottom: 40,
+        marginTop: 60
+
+
+      },
 });
