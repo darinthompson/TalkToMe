@@ -19,6 +19,9 @@ export default function MainScreen() {
         <TouchableOpacity style={styles.button} onPress={() => router.push('/history')}>
           <ThemedText style={styles.buttonText}>View Mood History</ThemedText>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/chat')}>
+          <ThemedText style={styles.buttonText}>Chat with AI Therapist</ThemedText>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => router.push('/settings')}>
           <ThemedText style={styles.buttonText}>Settings</ThemedText>
         </TouchableOpacity>
