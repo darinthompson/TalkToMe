@@ -20,7 +20,7 @@ export default function MainScreen() {
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => router.push('/journal')}>
             <Image
-                source={  require('../assets/images/FullLogo_Transparent journal1.png')}
+                source={  require('../assets/images/fulllogo_transparent_nobuffer journal3.png')}
                 style={styles.journal}
             />
           {/*<ThemedText style={styles.buttonText}>Write Journal Entry</ThemedText>*/}
