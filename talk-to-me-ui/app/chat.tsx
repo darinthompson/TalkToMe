@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, TextInput, FlatList, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -24,7 +23,6 @@ export type ChatMessage = {
   timestamp: number;
 };
 
-
 export default function ChatScreen() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -47,7 +45,6 @@ export default function ChatScreen() {
       setUserId(id);
     })();
   }, []);
-
 
   // Load chat history (web: localStorage, native: FileSystem)
   useEffect(() => {
@@ -113,7 +110,6 @@ export default function ChatScreen() {
           return;
         }
         const data = await res.json();
-        // Accept both array or {data: array}
         const arr = Array.isArray(data) ? data : data.data ?? [];
         setJournalHistory(arr.map((entry: any) => entry.user_journal || ""));
       } catch (e) {
@@ -189,6 +185,7 @@ export default function ChatScreen() {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <View style={styles.retroBg} />
       <FlatList
         ref={flatListRef}
         data={aiTyping ? [...messages, { role: "ai", content: typingText, timestamp: Date.now() }] : messages}
@@ -225,7 +222,21 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f7fa',
+    backgroundColor: '#232946',
+    overflow: 'hidden',
+  },
+  retroBg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+    backgroundColor: '#232946',
+    opacity: 0.95,
+    ...(Platform.OS === 'web'
+      ? { background: 'repeating-linear-gradient(135deg, #7f5af0 0px, #7f5af0 12px, #ff6f61 12px, #ff6f61 24px, #f7e9a0 24px, #f7e9a0 36px, #232946 36px, #232946 48px)' }
+      : {}),
   },
   list: {
     padding: 16,
@@ -260,6 +271,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#222',
     lineHeight: 22,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   inputRow: {
     flexDirection: 'row',
@@ -279,6 +291,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e3e3e3',
     color: '#222',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   sendBtn: {
     justifyContent: 'center',
@@ -297,6 +310,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 17,
     letterSpacing: 0.2,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   typingIndicatorRow: {
     flexDirection: 'row',
@@ -323,11 +337,25 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 15,
     marginRight: 4,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   typingDots: {
     color: '#0a7ea4',
     fontSize: 18,
     fontWeight: 'bold',
     letterSpacing: 1,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  footer: {
+    marginTop: 12,
+    fontSize: 18,
+    color: '#f7e9a0',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 2,
+    textAlign: 'center',
+    opacity: 0.85,
+    textShadowColor: '#7f5af0',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });

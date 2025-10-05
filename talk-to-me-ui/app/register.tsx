@@ -1,12 +1,8 @@
 import { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View, Text, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { Platform } from 'react-native';
-// Use fetch to call backend API. Use env variable for base URL for team compatibility.
 const API_BASE =
   Platform.OS === 'android'
     ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
@@ -50,69 +46,74 @@ export default function RegisterScreen() {
       setError(result.error);
       return;
     }
-    // Store user_id globally if returned
     if (typeof window !== 'undefined' && result.id) {
-      localStorage.setItem('user_id', result.id); // for web
+      localStorage.setItem('user_id', result.id);
       console.log('Stored user_id in localStorage:', result.id);
     } else if (result.id) {
-      (globalThis as any).user_id = result.id; // fallback for native
+      (globalThis as any).user_id = result.id;
       console.log('Stored user_id in globalThis:', result.id);
     }
     router.replace('/main');
   };
 
   return (
-    <ThemedView style={[styles.container, isDark && { backgroundColor: '#151718' }]}> 
-      <ThemedText type="title" style={[styles.title, isDark && { color: '#fff' }]}>Create Account</ThemedText>
-      <TextInput
-        style={[styles.input, isDark && styles.inputDark]}
-        placeholder="Username"
-        value={username}
-        autoCapitalize="none"
-        onChangeText={setUsername}
-        placeholderTextColor={isDark ? "#aaa" : "#888"}
-      />
-      <TextInput
-        style={[styles.input, isDark && styles.inputDark]}
-        placeholder="First Name"
-        value={firstName}
-        autoCapitalize="words"
-        onChangeText={setFirstName}
-        placeholderTextColor={isDark ? "#aaa" : "#888"}
-      />
-      <TextInput
-        style={[styles.input, isDark && styles.inputDark]}
-        placeholder="Last Name"
-        value={lastName}
-        autoCapitalize="words"
-        onChangeText={setLastName}
-        placeholderTextColor={isDark ? "#aaa" : "#888"}
-      />
-      <TextInput
-        style={[styles.input, isDark && styles.inputDark]}
-        placeholder="Email"
-        value={email}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        onChangeText={setEmail}
-        placeholderTextColor={isDark ? "#aaa" : "#888"}
-      />
-      <TextInput
-        style={[styles.input, isDark && styles.inputDark]}
-        placeholder="Password"
-        value={password}
-        secureTextEntry
-        onChangeText={setPassword}
-        placeholderTextColor={isDark ? "#aaa" : "#888"}
-      />
-      {error ? <ThemedText style={styles.error}>{error}</ThemedText> : null}
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <ThemedText style={styles.buttonText}>Register</ThemedText>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/')}> 
-        <ThemedText style={[styles.link, isDark && { color: '#4fc3f7' }]}>Already have an account? Login</ThemedText>
-      </TouchableOpacity>
-    </ThemedView>
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      <View style={styles.retroBg} />
+      <View style={styles.headerBox}>
+        <Text style={styles.retroTitle}>TalkToMe.AI</Text>
+        <Text style={styles.retroSubtitle}>Create Your Account</Text>
+      </View>
+      <View style={styles.formBox}>
+        <TextInput
+          style={[styles.input, isDark && styles.inputDark]}
+          placeholder="Username"
+          value={username}
+          autoCapitalize="none"
+          onChangeText={setUsername}
+          placeholderTextColor={isDark ? "#f7e9a0" : "#7f5af0"}
+        />
+        <TextInput
+          style={[styles.input, isDark && styles.inputDark]}
+          placeholder="First Name"
+          value={firstName}
+          autoCapitalize="words"
+          onChangeText={setFirstName}
+          placeholderTextColor={isDark ? "#f7e9a0" : "#7f5af0"}
+        />
+        <TextInput
+          style={[styles.input, isDark && styles.inputDark]}
+          placeholder="Last Name"
+          value={lastName}
+          autoCapitalize="words"
+          onChangeText={setLastName}
+          placeholderTextColor={isDark ? "#f7e9a0" : "#7f5af0"}
+        />
+        <TextInput
+          style={[styles.input, isDark && styles.inputDark]}
+          placeholder="Email"
+          value={email}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onChangeText={setEmail}
+          placeholderTextColor={isDark ? "#f7e9a0" : "#7f5af0"}
+        />
+        <TextInput
+          style={[styles.input, isDark && styles.inputDark]}
+          placeholder="Password"
+          value={password}
+          secureTextEntry
+          onChangeText={setPassword}
+          placeholderTextColor={isDark ? "#f7e9a0" : "#7f5af0"}
+        />
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/')}>
+          <Text style={[styles.link, isDark && { color: '#4fc3f7' }]}>Already have an account? Login</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
@@ -120,59 +121,149 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 32,
-    backgroundColor: '#f7f8fa',
+    padding: 0,
+    backgroundColor: '#232946',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+  containerDark: {
+    backgroundColor: '#151718',
+  },
+  retroBg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+    backgroundColor: '#232946',
+    opacity: 0.95,
+    ...(Platform.OS === 'web'
+      ? { background: 'repeating-linear-gradient(135deg, #7f5af0 0px, #7f5af0 12px, #ff6f61 12px, #ff6f61 24px, #f7e9a0 24px, #f7e9a0 36px, #232946 36px, #232946 48px)' }
+      : {}),
+  },
+  headerBox: {
+    alignItems: 'center',
     marginBottom: 24,
-    textAlign: 'center',
-    color: '#11181C',
+    paddingTop: 32,
+    zIndex: 1,
+  },
+  retroTitle: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: '#f7e9a0',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 3,
+    textShadowColor: '#ff6f61',
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 4,
+    marginBottom: 2,
+    textTransform: 'uppercase',
+  },
+  retroSubtitle: {
+    fontSize: 20,
+    color: '#7f5af0',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    marginBottom: 8,
+    letterSpacing: 2,
+    textShadowColor: '#f7e9a0',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 2,
+    textTransform: 'uppercase',
+  },
+  formBox: {
+    backgroundColor: '#fff',
+    borderRadius: 28,
+    padding: 36,
+    width: 360,
+    shadowColor: '#7f5af0',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.22,
+    shadowRadius: 24,
+    elevation: 12,
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#7f5af0',
+    marginBottom: 16,
   },
   input: {
-    borderWidth: 0,
-    backgroundColor: '#fff',
-    marginVertical: 8,
+    borderWidth: 2,
+    borderColor: '#ff6f61',
+    borderRadius: 16,
     padding: 16,
-    borderRadius: 12,
-    fontSize: 16,
-    color: '#11181C',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    marginBottom: 20,
+    fontSize: 20,
+    color: '#232946',
+    backgroundColor: '#f7e9a0',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    shadowColor: '#7f5af0',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 3,
     elevation: 2,
   },
   inputDark: {
-    backgroundColor: '#222',
-    color: '#fff',
+    backgroundColor: '#232946',
+    color: '#f7e9a0',
+    borderColor: '#ff6f61',
   },
   button: {
-    backgroundColor: '#0a7ea4',
-    paddingVertical: 16,
-    borderRadius: 12,
+    backgroundColor: '#7f5af0',
+    paddingVertical: 18,
+    borderRadius: 16,
     alignItems: 'center',
-    marginTop: 16,
-    shadowColor: '#0a7ea4',
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 3,
+    marginTop: 10,
+    marginBottom: 10,
+    width: '100%',
+    shadowColor: '#232946',
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    elevation: 4,
+    borderWidth: 2,
+    borderColor: '#f7e9a0',
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 18,
-  },
-  error: {
-    color: '#e74c3c',
-    marginTop: 8,
-    marginBottom: -8,
-    textAlign: 'center',
+    fontSize: 22,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   link: {
-    color: '#0a7ea4',
-    marginTop: 16,
+    color: '#7f5af0',
+    marginTop: 14,
     textAlign: 'center',
-    fontSize: 16
+    fontSize: 17,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    textDecorationLine: 'underline',
+    letterSpacing: 1,
+    textShadowColor: '#f7e9a0',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
+  },
+  error: {
+    color: '#ff6f61',
+    marginTop: 10,
+    marginBottom: -10,
+    textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontSize: 18,
+    letterSpacing: 1,
+    textShadowColor: '#fff',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
+  },
+  footer: {
+    marginTop: 36,
+    fontSize: 18,
+    color: '#f7e9a0',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 2,
+    textAlign: 'center',
+    opacity: 0.85,
+    textShadowColor: '#7f5af0',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });
