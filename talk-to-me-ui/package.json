@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@gluestack-ui/react-native-aria": "^0.1.7",
+    "@gluestack-ui/themed": "^1.1.73",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
@@ -36,10 +38,12 @@
     "react-native-gesture-handler": "~2.24.0",
     "react-native-markdown-display": "^7.0.2",
     "react-native-reanimated": "~3.17.4",
-    "react-native-safe-area-context": "5.4.0",
+    "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "~4.11.1",
+    "react-native-svg": "^15.14.0",
     "react-native-web": "~0.20.0",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "expo-image-picker": "~16.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

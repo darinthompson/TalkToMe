@@ -32,6 +32,7 @@ export default function MainScreen() {
         <TouchableOpacity style={styles.button} onPress={() => router.push('/settings')}>
           <ThemedText style={styles.buttonText}>Settings</ThemedText>
         </TouchableOpacity>
+
       </View>
     </ThemedView>
   );
