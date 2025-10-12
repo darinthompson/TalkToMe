@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
@@ -35,19 +35,6 @@ export default function LoginScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const inputStyle = [
-    styles.input,
-    isDark && styles.inputDark
-  ];
-  const titleStyle = [
-    styles.title,
-    isDark && { color: '#fff' }
-  ];
-  const linkStyle = [
-    styles.link,
-    isDark && { color: '#4fc3f7' }
-  ];
-
   const handleLogin = async () => {
     setError('');
     const result = await loginUser({ username, password });
@@ -68,64 +55,186 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={[styles.container, isDark && { backgroundColor: '#151718' }]}> 
-      <Text style={titleStyle}>Login</Text>
-      <TextInput
-        style={inputStyle}
-        placeholder="Username"
-        placeholderTextColor={isDark ? "#aaa" : "#888"}
-        autoCapitalize="none"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={inputStyle}
-        placeholder="Password"
-        placeholderTextColor={isDark ? "#aaa" : "#888"}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/register')}>
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/password-reset')}>
-        <Text style={linkStyle}>Forgot password? Reset here</Text>
-      </TouchableOpacity>
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      <View style={styles.headerBox}>
+        <Image
+          source={require('@/assets/images/TalkToMe.png')}
+          style={styles.logo}
+        />
+        <Text style={styles.retroTitle}>TalkToMe.AI</Text>
+      </View>
+      <View style={styles.formBox}>
+        <TextInput
+          style={[styles.input, isDark && styles.inputDark]}
+          placeholder="Username"
+          placeholderTextColor={isDark ? "#f7e9a0" : "#7f5af0"}
+          autoCapitalize="none"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          style={[styles.input, isDark && styles.inputDark]}
+          placeholder="Password"
+          placeholderTextColor={isDark ? "#f7e9a0" : "#7f5af0"}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonAlt} onPress={() => router.push('/register')}>
+          <Text style={styles.buttonAltText}>Register</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/password-reset')}>
+          <Text style={styles.link}>Forgot password? Reset here</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 32 },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 24, textAlign: 'center', color: '#11181C' },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, marginBottom: 16, color: '#11181C', backgroundColor: '#fff' },
-  inputDark: { backgroundColor: '#222', color: '#fff' },
-  link: { color: '#0a7ea4', marginTop: 16, textAlign: 'center', fontSize: 16 },
-  button: {
-    backgroundColor: '#0a7ea4',
-    paddingVertical: 16,
-    borderRadius: 12,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 0,
+    backgroundColor: '#f7e9a0',
     alignItems: 'center',
-    marginTop: 16,
-    shadowColor: '#0a7ea4',
-    shadowOpacity: 0.2,
+  },
+  containerDark: {
+    backgroundColor: '#232946',
+  },
+  headerBox: {
+    alignItems: 'center',
+    marginBottom: 24,
+    paddingTop: 32,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    marginBottom: 8,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: '#7f5af0',
+    backgroundColor: '#fff',
+  },
+  retroTitle: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#7f5af0',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 2,
+    textShadowColor: '#ff6f61',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 2,
+  },
+  retroSubtitle: {
+    fontSize: 18,
+    color: '#232946',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    marginBottom: 8,
+    letterSpacing: 1,
+    textShadowColor: '#f7e9a0',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
+  },
+  formBox: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    padding: 32,
+    width: 340,
+    shadowColor: '#7f5af0',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    elevation: 8,
+    alignItems: 'center',
+  },
+  input: {
+    borderWidth: 2,
+    borderColor: '#7f5af0',
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 18,
+    fontSize: 18,
+    color: '#232946',
+    backgroundColor: '#f7e9a0',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    shadowColor: '#ff6f61',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  inputDark: {
+    backgroundColor: '#232946',
+    color: '#f7e9a0',
+    borderColor: '#ff6f61',
+  },
+  button: {
+    backgroundColor: '#7f5af0',
+    paddingVertical: 16,
+    borderRadius: 14,
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+    width: '100%',
+    shadowColor: '#232946',
+    shadowOpacity: 0.18,
     shadowRadius: 8,
     elevation: 3,
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 20,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1,
+  },
+  buttonAlt: {
+    backgroundColor: '#ff6f61',
+    paddingVertical: 12,
+    borderRadius: 14,
+    alignItems: 'center',
+    marginBottom: 8,
+    width: '100%',
+    shadowColor: '#7f5af0',
+    shadowOpacity: 0.13,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  buttonAltText: {
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 18,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1,
+  },
+  link: {
+    color: '#7f5af0',
+    marginTop: 12,
+    textAlign: 'center',
+    fontSize: 16,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    textDecorationLine: 'underline',
   },
   error: {
-    color: '#e74c3c',
+    color: '#ff6f61',
     marginTop: 8,
     marginBottom: -8,
     textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontSize: 16,
+  },
+  footer: {
+    marginTop: 32,
+    fontSize: 16,
+    color: '#232946',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1,
+    textAlign: 'center',
+    opacity: 0.7,
   },
 });
