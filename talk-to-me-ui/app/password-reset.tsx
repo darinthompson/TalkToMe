@@ -7,10 +7,10 @@
 
 // const PasswordReset = () => {
 
-    
+
 //     const colorScheme = useColorScheme();
 //     const isDark = colorScheme === 'dark';
-    
+
 //     return(
 
 //     );
@@ -55,23 +55,45 @@ import React from 'react';
 import { Center } from '@/components/ui/center';
 import { Card } from '@/components/ui/card';
 import { Platform } from 'react-native';
+import { router } from 'expo-router';
 
 const PasswordReset = () => {
   const [isInvalid, setIsInvalid] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState('');
+  const [email, setEmail] = React.useState('');
   const [inputConfirm, setInputConfirm] = React.useState('');
+  const [password, setPasssword] = React.useState('');
 
   const API_BASE =
-  Platform.OS === 'android'
-    ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
-    : Platform.OS === 'web'
-    ? process.env.EXPO_PUBLIC_API_BASE_WEB || 'http://localhost:3000'
-    : process.env.EXPO_PUBLIC_API_BASE_IOS || 'http://127.0.0.1:3001';
+    Platform.OS === 'android'
+      ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
+      : Platform.OS === 'web'
+        ? process.env.EXPO_PUBLIC_API_BASE_WEB || 'http://localhost:3000'
+        : process.env.EXPO_PUBLIC_API_BASE_IOS || 'http://127.0.0.1:3001';
 
   const handleSubmit = async () => {
-    console.log('PASSWORD: ', inputValue);
-    console.log('CONFIRM: ', inputConfirm);
+
+    if(password !== inputConfirm) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/user/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password})
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        router.push('/')
+      }
+      return data;
+      
+    } catch (err) {
+      return { error: 'Password update failed' };
+    }
   };
+
 
   return (
 
@@ -89,17 +111,16 @@ const PasswordReset = () => {
           </FormControlLabel>
           <Input
             variant="outline"
-            size="sm"
+            size="md"
             isDisabled={false}
             isInvalid={false}
             isReadOnly={false}
           >
-          <InputField
-            type="password"
-            placeholder="password"
-            value={inputValue}
-            onChangeText={(text) => setInputValue(text)}
-          />
+            <InputField
+              placeholder="Enter Your Email Here..."
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
           </Input>
           <Input
             variant="outline"
@@ -108,12 +129,26 @@ const PasswordReset = () => {
             isInvalid={false}
             isReadOnly={false}
           >
-          <InputField
-            type="password"
-            placeholder="Confirm Password "
-            value={inputConfirm}
-            onChangeText={(text) => setInputConfirm(text)}
-          />
+            <InputField
+              type="password"
+              placeholder="password"
+              value={password}
+              onChangeText={(text) => setPasssword(text)}
+            />
+          </Input>
+          <Input
+            variant="outline"
+            size="sm"
+            isDisabled={false}
+            isInvalid={false}
+            isReadOnly={false}
+          >
+            <InputField
+              type="password"
+              placeholder="Confirm Password "
+              value={inputConfirm}
+              onChangeText={(text) => setInputConfirm(text)}
+            />
           </Input>
         </FormControl>
         <Button
@@ -130,7 +165,3 @@ const PasswordReset = () => {
 }
 
 export default PasswordReset;
-
-function handleSubmit() {
-  throw new Error('Function not implemented.');
-}
