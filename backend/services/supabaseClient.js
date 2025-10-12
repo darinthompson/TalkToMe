@@ -94,10 +94,35 @@ async function loginUser({ username, password }) {
   return { id: user.id, username: user.username, firstName: user.first_name, lastName: user.last_name, email: user.email };
 }
 
+const resetUserPassword = async ({email, password}) => {
+
+  let password_hash;
+  try {
+    password_hash = await argon2.hash(password, argon2Options);
+  } catch {
+    return { error: "Fatal error trying to hash updated password." };
+  }
+  
+  const {data: user, error} = await supabase
+    .from("User")
+    .update({password: password_hash})
+    .eq("email", email)
+
+  if(error) {
+    try { await argon2.verify(DUMMY_HASH, password, argon2Options); } catch {}
+    return { error: "Error updating password", isUpdated: false };
+  }
+
+  return {isUpdated: true};
+}
+
+
+
 export default {
   supabase,
   insertPrompt,
   registerUser,
   loginUser,
+  resetUserPassword,
   fetchMoodHistoryByUserId
 };
