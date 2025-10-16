@@ -17,7 +17,7 @@ const API_BASE =
     ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || "http://10.0.2.2:3001"
     : Platform.OS === "web"
     ? process.env.EXPO_PUBLIC_API_BASE_WEB || "http://localhost:3000"
-    : process.env.EXPO_PUBLIC_API_BASE_IOS || "http://127.0.0.1:3001";
+    : process.env.EXPO_PUBLIC_API_BASE_IOS || "https://dia-unshrinking-shonda.ngrok-free.dev";
 
 function HistoryCard({ item, expanded, toggleExpand }: { item: Entry, expanded: boolean, toggleExpand: (id: string) => void }) {
   const preview = item.user_journal.length > 80
@@ -70,18 +70,23 @@ export default function HistoryScreen() {
 
   useEffect(() => {
     const ctrl = new AbortController();
-    (async () => {
-      const userId =
-        Platform.OS === "web"
-          ? localStorage.getItem("user_id")
-          : await AsyncStorage.getItem("user_id");
 
-      if (!userId) return;
+    (async () => {
+      let userId = null;
 
       try {
+        if (Platform.OS === "web") {
+          userId = localStorage.getItem("user_id");
+        } else {
+          userId = await AsyncStorage.getItem("user_id");
+        }
+
+        if (!userId) return;
+
         const res = await fetch(`${API_BASE}/api/journal/fetch-mood-history/${userId}`, {
           signal: ctrl.signal,
         });
+
         const json = await res.json();
         const arr = Array.isArray(json) ? json : json.data ?? [];
         setEntries(arr);

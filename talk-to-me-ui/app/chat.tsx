@@ -1,14 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TextInput, FlatList, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback,
+  NativeSyntheticEvent,
+  TextInputSubmitEditingEventData,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 
 const API_BASE =
   Platform.OS === 'android'
     ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
     : Platform.OS === 'web'
       ? process.env.EXPO_PUBLIC_API_BASE_WEB || 'http://localhost:3000'
-      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'http://127.0.0.1:3001';
+      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'https://dia-unshrinking-shonda.ngrok-free.dev';
 
 const CHAT_FILENAME = "chat.txt";
 const CHAT_DIR = FileSystem.documentDirectory;
@@ -184,37 +197,43 @@ export default function ChatScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      <View style={styles.retroBg} />
-      <FlatList
-        ref={flatListRef}
-        data={aiTyping ? [...messages, { role: "ai", content: typingText, timestamp: Date.now() }] : messages}
-        renderItem={renderItem}
-        keyExtractor={(_, idx) => String(idx)}
-        contentContainerStyle={styles.list}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-      />
-      {aiTyping && (
-        <View style={styles.typingIndicatorRow}>
-          <View style={styles.typingBubble}>
-            <Text style={styles.typingText}>Therapist is typing</Text>
-            <Text style={styles.typingDots}>...</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 110 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <FlatList
+            ref={flatListRef}
+            data={aiTyping ? [...messages, { role: "ai", content: typingText, timestamp: Date.now() }] : messages}
+            renderItem={renderItem}
+            keyExtractor={(_, idx) => String(idx)}
+            contentContainerStyle={{ padding: 12, flexGrow: 1, justifyContent: "flex-end", paddingBottom: 100 }}
+            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+          />
+
+          <View style={styles.inputRow}>
+            <TextInput
+              style={styles.input}
+              value={input}
+              onChangeText={setInput}
+              placeholder="Type a message..."
+              editable={!aiTyping}
+              multiline
+              placeholderTextColor="#555"
+              onSubmitEditing={sendMessage}
+            />
+            <TouchableOpacity
+              onPress={sendMessage}
+              disabled={aiTyping || !input.trim()}
+              style={styles.sendBtn}
+            >
+              <Text style={styles.sendBtnText}>{aiTyping ? "..." : "Send"}</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      )}
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          value={input}
-          onChangeText={setInput}
-          placeholder="Type your message..."
-          editable={!loading && !aiTyping}
-          onSubmitEditing={sendMessage}
-        />
-        <TouchableOpacity onPress={sendMessage} disabled={loading || !input.trim() || aiTyping} style={styles.sendBtn}>
-          <Text style={styles.sendBtnText}>{loading || aiTyping ? "..." : "Send"}</Text>
-        </TouchableOpacity>
-      </View>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 }
@@ -223,20 +242,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#232946',
-    overflow: 'hidden',
-  },
-  retroBg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: -1,
-    backgroundColor: '#232946',
-    opacity: 0.95,
-    ...(Platform.OS === 'web'
-      ? { background: 'repeating-linear-gradient(135deg, #7f5af0 0px, #7f5af0 12px, #ff6f61 12px, #ff6f61 24px, #f7e9a0 24px, #f7e9a0 36px, #232946 36px, #232946 48px)' }
-      : {}),
   },
   list: {
     padding: 16,
@@ -244,32 +249,40 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   bubble: {
-    maxWidth: '80%',
+    maxWidth: '75%',
     paddingVertical: 14,
     paddingHorizontal: 18,
     borderRadius: 20,
     marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
   userBubble: {
+    backgroundColor: '#7f5af0',
     alignSelf: 'flex-end',
-    backgroundColor: '#aee1f9',
-    borderTopRightRadius: 4,
+    borderTopRightRadius: 0,
+    shadowColor: '#7f5af0',
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 3,
   },
   aiBubble: {
-    alignSelf: 'flex-start',
     backgroundColor: '#fff',
-    borderTopLeftRadius: 4,
+    alignSelf: 'flex-start',
+    borderTopLeftRadius: 0,
     borderWidth: 1,
     borderColor: '#e3e3e3',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
   bubbleText: {
     fontSize: 16,
-    color: '#222',
+    color: '#232946',
     lineHeight: 22,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
@@ -277,53 +290,54 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 14,
     borderTopWidth: 1,
-    borderColor: '#e3e3e3',
-    backgroundColor: '#fafdff',
-    alignItems: 'center',
+    borderColor: '#555',
+    backgroundColor: '#f7f7f7',
+    alignItems: 'flex-end',
   },
   input: {
     flex: 1,
     fontSize: 16,
-    backgroundColor: '#f2f6fa',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    marginRight: 10,
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
     borderWidth: 1,
-    borderColor: '#e3e3e3',
-    color: '#222',
+    borderColor: '#ccc',
+    maxHeight: 140,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   sendBtn: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginLeft: 12,
+    backgroundColor: '#7f5af0',
     paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 10,
-    backgroundColor: '#0a7ea4',
-    shadowColor: '#0a7ea4',
-    shadowOpacity: 0.13,
-    shadowRadius: 4,
-    elevation: 2,
+    paddingVertical: 12,
+    borderRadius: 25,
+    shadowColor: '#7f5af0',
+    shadowOpacity: 0.22,
+    shadowRadius: 8,
+    elevation: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   sendBtnText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 17,
-    letterSpacing: 0.2,
+    fontSize: 18,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   typingIndicatorRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 10,
-    marginBottom: 2,
+    marginBottom: 6,
   },
   typingBubble: {
     backgroundColor: '#e3f2fd',
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    marginTop: 2,
     flexDirection: 'row',
     alignItems: 'center',
     shadowColor: '#000',
@@ -345,17 +359,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-  },
-  footer: {
-    marginTop: 12,
-    fontSize: 18,
-    color: '#f7e9a0',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    letterSpacing: 2,
-    textAlign: 'center',
-    opacity: 0.85,
-    textShadowColor: '#7f5af0',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
 });
