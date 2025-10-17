@@ -15,13 +15,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system/legacy";
-
-const API_BASE =
-  Platform.OS === 'android'
-    ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
-    : Platform.OS === 'web'
-      ? process.env.EXPO_PUBLIC_API_BASE_WEB || 'http://localhost:3000'
-      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'https://dia-unshrinking-shonda.ngrok-free.dev';
+import API_BASE from '@/utils/api';
 
 const CHAT_FILENAME = "chat.txt";
 const CHAT_DIR = FileSystem.documentDirectory;
@@ -239,10 +233,7 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#232946',
-  },
+  container: { flex: 1, backgroundColor: '#F6F5F9' },
   list: {
     padding: 16,
     flexGrow: 1,
@@ -261,7 +252,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   userBubble: {
-    backgroundColor: '#7f5af0',
+    backgroundColor: '#111827',
     alignSelf: 'flex-end',
     borderTopRightRadius: 0,
     shadowColor: '#7f5af0',
@@ -282,43 +273,13 @@ const styles = StyleSheet.create({
   },
   bubbleText: {
     fontSize: 16,
-    color: '#232946',
+    color: '#111827',
     lineHeight: 22,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  inputRow: {
-    flexDirection: 'row',
-    padding: 14,
-    borderTopWidth: 1,
-    borderColor: '#555',
-    backgroundColor: '#f7f7f7',
-    alignItems: 'flex-end',
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    backgroundColor: '#fff',
-    borderRadius: 25,
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    maxHeight: 140,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-  },
-  sendBtn: {
-    marginLeft: 12,
-    backgroundColor: '#7f5af0',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 25,
-    shadowColor: '#7f5af0',
-    shadowOpacity: 0.22,
-    shadowRadius: 8,
-    elevation: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  inputRow: { flexDirection: 'row', padding: 12, borderTopWidth: 1, borderColor: '#E5E7EB', backgroundColor: '#fff', alignItems: 'flex-end' },
+  input: { flex: 1, fontSize: 16, backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: '#E5E7EB', maxHeight: 140, fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace' },
+  sendBtn: { marginLeft: 10, backgroundColor: '#111827', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   sendBtnText: {
     color: '#fff',
     fontWeight: 'bold',

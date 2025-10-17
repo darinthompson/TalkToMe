@@ -36,6 +36,26 @@ const fetchMoodHistoryByUserId = async (user_id) => {
 
 }
 
+// Appointments helpers
+const insertAppointment = async ({ user_id, title, start_time, end_time, location, notes }) => {
+  const { data, error } = await supabase.from('Appointment').insert([
+    { user_id, title, start_time, end_time, location, notes }
+  ]).select();
+  return { data, error: error?.message };
+};
+
+const fetchAppointmentsByDate = async (user_id, dateYYYYMMDD) => {
+  // Expect start_time/end_time stored as timestamptz; filter by date portion
+  const { data, error } = await supabase
+    .from('Appointment')
+    .select('*')
+    .eq('user_id', user_id)
+    .gte('start_time', `${dateYYYYMMDD}T00:00:00.000Z`)
+    .lt('start_time', `${dateYYYYMMDD}T23:59:59.999Z`)
+    .order('start_time', { ascending: true });
+  return { data, error: error?.message };
+};
+
 const registerUser = async ({ username, firstName, lastName, email, password }) => {
   const { data: existing } = await supabase
     .from('User')
@@ -124,5 +144,7 @@ export default {
   registerUser,
   loginUser,
   resetUserPassword,
-  fetchMoodHistoryByUserId
+  fetchMoodHistoryByUserId,
+  insertAppointment,
+  fetchAppointmentsByDate
 };
