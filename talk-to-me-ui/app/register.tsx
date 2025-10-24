@@ -1,59 +1,95 @@
-import { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View, Text, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useState } from "react";
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Text,
+  Platform,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_BASE =
-  Platform.OS === 'android'
-    ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
-    : Platform.OS === 'web'
-      ? process.env.EXPO_PUBLIC_API_BASE_WEB || 'http://localhost:3000'
-      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'http://127.0.0.1:3001';
+  Platform.OS === "android"
+    ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || "http://10.0.2.2:3001"
+    : Platform.OS === "web"
+    ? process.env.EXPO_PUBLIC_API_BASE_WEB || "http://localhost:3000"
+    : process.env.EXPO_PUBLIC_API_BASE_IOS ||
+      "https://dia-unshrinking-shonda.ngrok-free.dev";
 
-async function registerUser({ username, firstName, lastName, email, password }: { username: string; firstName: string; lastName: string; email: string; password: string }) {
+async function registerUser({
+  username,
+  firstName,
+  lastName,
+  email,
+  password,
+}: {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}) {
   try {
     const res = await fetch(`${API_BASE}/api/user/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, firstName, lastName, email, password })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, firstName, lastName, email, password }),
     });
     return await res.json();
   } catch (err) {
-    return { error: 'Registration failed.' };
+    return { error: "Registration failed." };
   }
 }
 
 export default function RegisterScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
 
-  const [username, setUsername] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleRegister = async () => {
     if (!username || !firstName || !lastName || !email || !password) {
-      setError('Please fill out all fields.');
+      setError("Please fill out all fields.");
       return;
     }
-    setError('');
-    const result = await registerUser({ username, firstName, lastName, email, password });
+
+    setError("");
+    const result = await registerUser({
+      username,
+      firstName,
+      lastName,
+      email,
+      password,
+    });
+
     if (result.error) {
       setError(result.error);
       return;
     }
-    if (typeof window !== 'undefined' && result.id) {
-      localStorage.setItem('user_id', result.id);
-      console.log('Stored user_id in localStorage:', result.id);
-    } else if (result.id) {
-      (globalThis as any).user_id = result.id;
-      console.log('Stored user_id in globalThis:', result.id);
+
+    if (result.id) {
+      try {
+        if (Platform.OS === "web" && typeof window !== "undefined") {
+          localStorage.setItem("user_id", result.id);
+        } else {
+          await AsyncStorage.setItem("user_id", result.id);
+        }
+        console.log("Stored user_id:", result.id);
+      } catch (e) {
+        console.error("Failed to store user_id:", e);
+      }
     }
-    router.replace('/main');
+
+    router.replace("/main");
   };
 
   return (

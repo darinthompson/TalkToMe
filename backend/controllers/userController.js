@@ -24,7 +24,22 @@ async function registerUser(req, res) {
   res.json(result);
 }
 
+const resetUserPassword = async (req, res) => {
+  const {email, password} = req.body || {};
+
+  console.log('BODY: ', email, password);
+  if(!email || !password) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  const result = await supabaseClient.resetUserPassword({ email, password });
+  if (result.error) {
+    return res.status(400).json({ error: result.error });
+  }
+  res.json(result);
+}
+
 export default {
   loginUser,
-  registerUser
+  registerUser,
+  resetUserPassword
 };

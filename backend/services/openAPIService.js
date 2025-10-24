@@ -7,7 +7,12 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 async function getAIResponse(journal_text) {
   const prompt = `User Journal: ${journal_text}
-Instructions:
+You are a professional therapist.\n\n Respond as a therapist,
+Your job is to make the user feel heard and understood.
+Give them suggestions or advice on what they can do to feel better.
+Be empathetic, supportive, and proactive in your suggestions.
+But at the same time, you are their therapist so be professional and careful with your words.
+  Instructions:
 - Summarize the emotion.
 - Guess the mood (e.g., happy, sad).
 - Provide one short tip.`;

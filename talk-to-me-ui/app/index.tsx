@@ -12,7 +12,7 @@ const API_BASE =
     ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
     : Platform.OS === 'web'
       ? process.env.EXPO_PUBLIC_API_BASE_WEB || 'http://localhost:3000'
-      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'http://127.0.0.1:3001';
+      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'https://dia-unshrinking-shonda.ngrok-free.dev';
 
 async function loginUser({ username, password }: { username: string; password: string }) {
   try {
@@ -42,14 +42,15 @@ export default function LoginScreen() {
       setError(result.error);
       return;
     }
-    // Store user_id globally
-    if (typeof window !== 'undefined' && result.id) {
-      localStorage.setItem('user_id', result.id); // for web
-      console.log('Stored user_id in localStorage:', result.id);
-    } else if (result.id) {
-      // (globalThis as any).user_id = result.id; // fallback for native
-      await AsyncStorage.setItem('user_id', result.id);
-      console.log('Stored user_id in globalThis:', result.id);
+    if (result.id) {
+      // Detect if running in web or native
+      if (Platform.OS === 'web') {
+        localStorage.setItem('user_id', result.id);
+        console.log('Stored user_id in localStorage (web):', result.id);
+      } else {
+        await AsyncStorage.setItem('user_id', result.id);
+        console.log('Stored user_id in AsyncStorage (native):', result.id);
+      }
     }
     router.replace('/main');
   };
@@ -87,7 +88,7 @@ export default function LoginScreen() {
         <TouchableOpacity style={styles.buttonAlt} onPress={() => router.push('/register')}>
           <Text style={styles.buttonAltText}>Register</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/reset-password')}>
+        <TouchableOpacity onPress={() => router.push('/password-reset')}>
           <Text style={styles.link}>Forgot password? Reset here</Text>
         </TouchableOpacity>
       </View>

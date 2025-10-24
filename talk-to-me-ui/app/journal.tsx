@@ -1,7 +1,19 @@
 import { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, ActivityIndicator, Platform } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  Platform,
+  KeyboardAvoidingView,
+  ScrollView,
+  Keyboard,
+  TouchableWithoutFeedback
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import Markdown from 'react-native-markdown-display';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface JournalEntryScreenProps {
   route?: any;
@@ -12,10 +24,9 @@ const API_BASE =
     ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
     : Platform.OS === 'web'
       ? process.env.EXPO_PUBLIC_API_BASE_WEB || 'http://localhost:3000'
-      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'http://127.0.0.1:3001';
+      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'https://dia-unshrinking-shonda.ngrok-free.dev';
 
 export default function JournalEntryScreen({ route }: JournalEntryScreenProps) {
-  // Assume user_id is passed via props, context, or global state
   const router = useRouter();
   const [journal, setJournal] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,13 +36,19 @@ export default function JournalEntryScreen({ route }: JournalEntryScreenProps) {
   const [userId, setUserId] = useState('');
 
   useEffect(() => {
-    let id = '';
-    if (typeof window !== 'undefined') {
-      id = localStorage.getItem('user_id') || '';
-    } else {
-      id = (globalThis as any).user_id || '';
-    }
-    setUserId(id);
+    (async () => {
+      let id = '';
+      try {
+        if (Platform.OS === 'web') {
+          id = localStorage.getItem('user_id') || '';
+        } else {
+          id = (await AsyncStorage.getItem('user_id')) || '';
+        }
+      } catch (e) {
+        console.error('Error fetching user_id:', e);
+      }
+      setUserId(id);
+    })();
   }, []);
 
   const handleSubmit = async () => {
@@ -60,40 +77,48 @@ export default function JournalEntryScreen({ route }: JournalEntryScreenProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.retroBg} />
-      <Text style={styles.title}>Write Your Journal Entry</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="How are you feeling today? Write your thoughts..."
-        multiline
-        value={journal}
-        onChangeText={setJournal}
-        placeholderTextColor="#7f5af0"
-      />
-      <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Saving...' : 'Save Journal'}</Text>
-      </TouchableOpacity>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      {aiResponse ? (
-        <View style={styles.responseBox}>
-          <Text style={styles.responseTitle}>AI Response:</Text>
-          <Markdown style={markdownStyles}>{aiResponse}</Markdown>
-          <Text style={styles.mood}>Mood: {mood}</Text>
-        </View>
-      ) : null}
-    </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.retroBg} />
+          <Text style={styles.title}>Write Your Journal Entry</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="How are you feeling today? Write your thoughts..."
+            multiline
+            value={journal}
+            onChangeText={setJournal}
+            placeholderTextColor="#7f5af0"
+          />
+          <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
+            <Text style={styles.buttonText}>{loading ? 'Saving...' : 'Save Journal'}</Text>
+          </TouchableOpacity>
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {aiResponse ? (
+            <View style={styles.responseBox}>
+              <Text style={styles.responseTitle}>AI Response:</Text>
+              <Markdown style={markdownStyles}>{aiResponse}</Markdown>
+              <Text style={styles.mood}>Mood: {mood}</Text>
+            </View>
+          ) : null}
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 24,
     backgroundColor: '#232946',
     alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
   },
   retroBg: {
     position: 'absolute',
@@ -136,7 +161,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.10,
     shadowRadius: 3,
     elevation: 2,
-    marginBottom: 18,
+    marginBottom: 20,
     width: 340,
     textAlignVertical: 'top',
   },
@@ -145,7 +170,7 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     borderRadius: 16,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 30,
     width: 340,
     shadowColor: '#232946',
     shadowOpacity: 0.22,
@@ -194,29 +219,11 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1,
   },
-  responseText: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: '#232946',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-  },
   mood: {
     fontStyle: 'italic',
     color: '#ff6f61',
     fontSize: 16,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-  },
-  footer: {
-    marginTop: 36,
-    fontSize: 18,
-    color: '#f7e9a0',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    letterSpacing: 2,
-    textAlign: 'center',
-    opacity: 0.85,
-    textShadowColor: '#7f5af0',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
 });
 
