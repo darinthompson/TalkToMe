@@ -1,18 +1,13 @@
 import { useState } from 'react';
-import { useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Text, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { Platform } from 'react-native';
-// Use fetch to call backend API. Use env variable for base URL for team compatibility.
-const API_BASE =
-  Platform.OS === 'android'
-    ? process.env.EXPO_PUBLIC_API_BASE_ANDROID || 'http://10.0.2.2:3001'
-    : Platform.OS === 'web'
-      ? process.env.EXPO_PUBLIC_API_BASE_WEB || 'http://localhost:3000'
-      : process.env.EXPO_PUBLIC_API_BASE_IOS || 'https://dia-unshrinking-shonda.ngrok-free.dev';
+import API_BASE from '@/utils/api';
+import Screen from '@/components/ui/Screen';
+import Card from '@/components/ui/Card';
+import Input from '@/components/ui/Input';
+import PrimaryButton from '@/components/ui/PrimaryButton';
 
 async function loginUser({ username, password }: { username: string; password: string }) {
   try {
@@ -32,8 +27,6 @@ export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
 
   const handleLogin = async () => {
     setError('');
@@ -43,199 +36,49 @@ export default function LoginScreen() {
       return;
     }
     if (result.id) {
-      // Detect if running in web or native
       if (Platform.OS === 'web') {
         localStorage.setItem('user_id', result.id);
-        console.log('Stored user_id in localStorage (web):', result.id);
       } else {
         await AsyncStorage.setItem('user_id', result.id);
-        console.log('Stored user_id in AsyncStorage (native):', result.id);
       }
     }
-    router.replace('/main');
+    router.replace('/(tabs)/home');
   };
 
   return (
-    <View style={[styles.container, isDark && styles.containerDark]}>
-      <View style={styles.headerBox}>
-        <Image
-          source={require('@/assets/images/TalkToMe.png')}
-          style={styles.logo}
-        />
-        <Text style={styles.retroTitle}>TalkToMe.AI</Text>
+    <Screen>
+      <View style={{ gap: 14 }}>
+        <View>
+          <Text style={styles.title}>Welcome back</Text>
+          <Text style={styles.subtitle}>Sign in to continue</Text>
+        </View>
+        {error ? (
+          <Card style={{ borderColor: '#FCA5A5', backgroundColor: '#FEF2F2' }}>
+            <Text style={{ color: '#991B1B' }}>{error}</Text>
+          </Card>
+        ) : null}
+        <Card style={{ gap: 10 }}>
+          <Input placeholder="Username" autoCapitalize="none" value={username} onChangeText={setUsername} />
+          <Input placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
+          <PrimaryButton label="Sign In" onPress={handleLogin} />
+        </Card>
+        <Text onPress={() => router.push('/register')} style={styles.link}>Create an account</Text>
+        <Text onPress={() => router.push('/password-reset')} style={styles.link}>Forgot your password?</Text>
       </View>
-      <View style={styles.formBox}>
-        <TextInput
-          style={[styles.input, isDark && styles.inputDark]}
-          placeholder="Username"
-          placeholderTextColor={isDark ? "#f7e9a0" : "#7f5af0"}
-          autoCapitalize="none"
-          value={username}
-          onChangeText={setUsername}
-        />
-        <TextInput
-          style={[styles.input, isDark && styles.inputDark]}
-          placeholder="Password"
-          placeholderTextColor={isDark ? "#f7e9a0" : "#7f5af0"}
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonAlt} onPress={() => router.push('/register')}>
-          <Text style={styles.buttonAltText}>Register</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/password-reset')}>
-          <Text style={styles.link}>Forgot password? Reset here</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 0,
-    backgroundColor: '#f7e9a0',
-    alignItems: 'center',
-  },
-  containerDark: {
-    backgroundColor: '#232946',
-  },
-  headerBox: {
-    alignItems: 'center',
-    marginBottom: 24,
-    paddingTop: 32,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    marginBottom: 8,
-    borderRadius: 20,
-    borderWidth: 3,
-    borderColor: '#7f5af0',
-    backgroundColor: '#fff',
-  },
-  retroTitle: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#7f5af0',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    letterSpacing: 2,
-    textShadowColor: '#ff6f61',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 2,
-  },
-  retroSubtitle: {
-    fontSize: 18,
-    color: '#232946',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    marginBottom: 8,
-    letterSpacing: 1,
-    textShadowColor: '#f7e9a0',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 1,
-  },
-  formBox: {
-    backgroundColor: '#fff',
-    borderRadius: 24,
-    padding: 32,
-    width: 340,
-    shadowColor: '#7f5af0',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    elevation: 8,
-    alignItems: 'center',
-  },
-  input: {
-    borderWidth: 2,
-    borderColor: '#7f5af0',
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 18,
-    fontSize: 18,
-    color: '#232946',
-    backgroundColor: '#f7e9a0',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    shadowColor: '#ff6f61',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  inputDark: {
-    backgroundColor: '#232946',
-    color: '#f7e9a0',
-    borderColor: '#ff6f61',
-  },
-  button: {
-    backgroundColor: '#7f5af0',
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 8,
-    width: '100%',
-    shadowColor: '#232946',
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 20,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    letterSpacing: 1,
-  },
-  buttonAlt: {
-    backgroundColor: '#ff6f61',
-    paddingVertical: 12,
-    borderRadius: 14,
-    alignItems: 'center',
-    marginBottom: 8,
-    width: '100%',
-    shadowColor: '#7f5af0',
-    shadowOpacity: 0.13,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  buttonAltText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 18,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    letterSpacing: 1,
-  },
+  title: { fontSize: 28, color: '#101112', fontWeight: '700' },
+  subtitle: { color: '#6B7280', marginTop: 4 },
   link: {
-    color: '#7f5af0',
+    color: '#111827',
     marginTop: 12,
-    textAlign: 'center',
+    textAlign: 'left',
     fontSize: 16,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     textDecorationLine: 'underline',
+    fontWeight: '600',
   },
-  error: {
-    color: '#ff6f61',
-    marginTop: 8,
-    marginBottom: -8,
-    textAlign: 'center',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    fontSize: 16,
-  },
-  footer: {
-    marginTop: 32,
-    fontSize: 16,
-    color: '#232946',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    letterSpacing: 1,
-    textAlign: 'center',
-    opacity: 0.7,
-  },
+  error: { color: '#B91C1C', marginTop: 8, fontSize: 16 },
 });

@@ -20,8 +20,8 @@ export default function MainScreen() {
         </ThemedText>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('/journal')}>
-          <ThemedText style={styles.buttonText}>Write Journal Entry</ThemedText>
+        <TouchableOpacity style={styles.button} onPress={() => router.replace('/(tabs)/home')}>
+          <ThemedText style={styles.buttonText}>Enter App</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => router.push('/history')}>
           <ThemedText style={styles.buttonText}>View Mood History</ThemedText>

@@ -14,7 +14,7 @@ Be empathetic, supportive, and proactive in your suggestions.
 But at the same time, you are their therapist so be professional and careful with your words.
   Instructions:
 - Summarize the emotion.
-- Guess the mood (e.g., happy, sad).
+- Guess the mood (e.g., happy, sad) unknown is not a mood be very specific with the mood.
 - Provide one short tip.`;
 
   const resp = await openai.chat.completions.create({
