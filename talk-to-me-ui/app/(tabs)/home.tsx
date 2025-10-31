@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import API_BASE from '@/utils/api';
 import { useFocusEffect } from '@react-navigation/native';
+import { AppointmentStore, Appointment } from '@/utils/appointments';
 //
 
 export default function HomeScreen() {
@@ -14,10 +15,11 @@ export default function HomeScreen() {
   const [moodScore, setMoodScore] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(2);
   const [hasAppointments, setHasAppointments] = useState<boolean>(false);
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', date: '', start: '', end: '', location: '', notes: '' });
   const [saving, setSaving] = useState(false);
+  const apptStore = useMemo(() => new AppointmentStore(), []);
 
   const week = useMemo(() => {
     // Generate a simple week row centered on today
@@ -125,24 +127,9 @@ export default function HomeScreen() {
       const base = new Date(today);
       base.setDate(today.getDate() - 2 + selectedIndex);
       const dateStr = base.toISOString().slice(0, 10);
-      const storageKey = `appointments_${userId}`;
-      let all: any[] = [];
-      if (Platform.OS === 'web') {
-        try {
-          const raw = localStorage.getItem(storageKey);
-          all = raw ? JSON.parse(raw) : [];
-        } catch {}
-      } else {
-        try {
-          const raw = await AsyncStorage.getItem(storageKey);
-          all = raw ? JSON.parse(raw) : [];
-        } catch {}
-      }
-      const filtered = (all || [])
-        .filter((a: any) => typeof a?.start_time === 'string' && a.start_time.slice(0, 10) === dateStr)
-        .sort((a: any, b: any) => (a.start_time < b.start_time ? -1 : a.start_time > b.start_time ? 1 : 0));
-      setAppointments(filtered);
-      setHasAppointments(filtered.length > 0);
+      const list = await apptStore.listForDate(userId, dateStr);
+      setAppointments(list);
+      setHasAppointments(list.length > 0);
     } catch (e) {
       setAppointments([]);
       setHasAppointments(false);
@@ -170,24 +157,13 @@ export default function HomeScreen() {
     try {
       const startIso = new Date(`${form.date}T${form.start}:00`).toISOString();
       const endIso = new Date(`${form.date}T${form.end}:00`).toISOString();
-      const appt = {
-        id: `appt_${Date.now()}`,
-        user_id: userId,
+      await apptStore.add(userId, {
         title: form.title.trim(),
         start_time: startIso,
         end_time: endIso,
         location: form.location?.trim() || '',
         notes: form.notes?.trim() || '',
-      };
-      const storageKey = `appointments_${userId}`;
-      let all: any[] = [];
-      if (Platform.OS === 'web') {
-        try { all = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { all = []; }
-        localStorage.setItem(storageKey, JSON.stringify([...(all || []), appt]));
-      } else {
-        try { all = JSON.parse((await AsyncStorage.getItem(storageKey)) || '[]'); } catch { all = []; }
-        await AsyncStorage.setItem(storageKey, JSON.stringify([...(all || []), appt]));
-      }
+      });
       setShowModal(false);
       setForm({ title: '', date: '', start: '', end: '', location: '', notes: '' });
       await fetchApptsForSelectedDay();
