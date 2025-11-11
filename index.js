@@ -6,6 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 import openAIRoutes from './backend/routes/openAIRoutes.js';
 import userRoutes from './backend/routes/userRoutes.js';
 import journalRoutes from './backend/routes/journalRoutes.js';
+import challengesRoutes from './backend/routes/challengesRoutes.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 app.use('/api/ai', openAIRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/journal', journalRoutes);
+app.use('/api/challenges', challengesRoutes);
 
 // Error handler
 app.use((err, _req, res, _next) => {

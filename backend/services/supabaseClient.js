@@ -136,6 +136,227 @@ const resetUserPassword = async ({email, password}) => {
   return {isUpdated: true};
 }
 
+// Daily Challenges helpers
+const getUserDailyChallenges = async (user_id, date) => {
+  const { data, error } = await supabase
+    .from('user_daily_challenges')
+    .select('*')
+    .eq('user_id', user_id)
+    .eq('date', date)
+    .single();
+
+  if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+    return { error: error.message };
+  }
+
+  return { data, error: null };
+};
+
+const insertUserDailyChallenges = async ({ user_id, date, daily_tasks, score }) => {
+  const { data, error } = await supabase
+    .from('user_daily_challenges')
+    .insert([{ user_id, date, daily_tasks, score, version: 1 }])
+    .select()
+    .single();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data, error: null };
+};
+
+const updateUserDailyChallenges = async ({ user_id, date, daily_tasks, score, current_version }) => {
+  const { data, error } = await supabase
+    .from('user_daily_challenges')
+    .update({
+      daily_tasks,
+      score,
+      updated_at: new Date().toISOString(),
+      version: current_version + 1
+    })
+    .eq('user_id', user_id)
+    .eq('date', date)
+    .eq('version', current_version) // Optimistic locking
+    .select()
+    .single();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data, error: null };
+};
+
+// Streaks helpers
+const getUserStreaks = async (user_id) => {
+  const { data, error } = await supabase
+    .from('user_streaks')
+    .select('*')
+    .eq('user_id', user_id)
+    .single();
+
+  if (error && error.code !== 'PGRST116') {
+    return { error: error.message };
+  }
+
+  return { data, error: null };
+};
+
+const insertUserStreaks = async ({ user_id, current_streak, longest_streak, last_completion_date, perfect_days_count, total_tasks_completed }) => {
+  const { data, error } = await supabase
+    .from('user_streaks')
+    .insert([{
+      user_id,
+      current_streak: current_streak || 0,
+      longest_streak: longest_streak || 0,
+      last_completion_date,
+      perfect_days_count: perfect_days_count || 0,
+      total_tasks_completed: total_tasks_completed || 0,
+      version: 1
+    }])
+    .select()
+    .single();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data, error: null };
+};
+
+const updateUserStreaks = async ({ user_id, current_streak, longest_streak, last_completion_date, perfect_days_count, total_tasks_completed, current_version }) => {
+  const { data, error } = await supabase
+    .from('user_streaks')
+    .update({
+      current_streak,
+      longest_streak,
+      last_completion_date,
+      perfect_days_count,
+      total_tasks_completed,
+      updated_at: new Date().toISOString(),
+      version: current_version + 1
+    })
+    .eq('user_id', user_id)
+    .eq('version', current_version) // Optimistic locking
+    .select()
+    .single();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data, error: null };
+};
+
+// Achievements helpers
+const getAllAchievements = async () => {
+  const { data, error } = await supabase
+    .from('achievements')
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order');
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data: data || [], error: null };
+};
+
+const getUserAchievements = async (user_id) => {
+  const { data, error } = await supabase
+    .from('user_achievements')
+    .select('*')
+    .eq('user_id', user_id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data: data || [], error: null };
+};
+
+const insertUserAchievement = async ({ user_id, achievement_id, progress, unlocked_at }) => {
+  const { data, error } = await supabase
+    .from('user_achievements')
+    .insert([{
+      user_id,
+      achievement_id,
+      progress: progress || 0,
+      unlocked_at,
+      version: 1
+    }])
+    .select()
+    .single();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data, error: null };
+};
+
+const updateUserAchievement = async ({ user_id, achievement_id, progress, unlocked_at, current_version }) => {
+  const { data, error } = await supabase
+    .from('user_achievements')
+    .update({
+      progress,
+      unlocked_at,
+      updated_at: new Date().toISOString(),
+      version: current_version + 1
+    })
+    .eq('user_id', user_id)
+    .eq('achievement_id', achievement_id)
+    .eq('version', current_version) // Optimistic locking
+    .select()
+    .single();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data, error: null };
+};
+
+const upsertUserAchievement = async ({ user_id, achievement_id, progress, unlocked_at }) => {
+  const { data, error } = await supabase
+    .from('user_achievements')
+    .upsert({
+      user_id,
+      achievement_id,
+      progress: progress || 0,
+      unlocked_at,
+      updated_at: new Date().toISOString()
+    }, {
+      onConflict: 'user_id,achievement_id'
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data, error: null };
+};
+
+const getTodaysUnlockedAchievements = async (user_id, date) => {
+  const { data, error } = await supabase
+    .from('user_achievements')
+    .select('*')
+    .eq('user_id', user_id)
+    .gte('unlocked_at', `${date}T00:00:00.000Z`)
+    .lt('unlocked_at', `${date}T23:59:59.999Z`)
+    .order('unlocked_at', { ascending: true });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data: data || [], error: null };
+};
+
 
 
 export default {
@@ -146,5 +367,20 @@ export default {
   resetUserPassword,
   fetchMoodHistoryByUserId,
   insertAppointment,
-  fetchAppointmentsByDate
+  fetchAppointmentsByDate,
+  // Daily Challenges database operations
+  getUserDailyChallenges,
+  insertUserDailyChallenges,
+  updateUserDailyChallenges,
+  // Streaks database operations
+  getUserStreaks,
+  insertUserStreaks,
+  updateUserStreaks,
+  // Achievements database operations
+  getAllAchievements,
+  getUserAchievements,
+  insertUserAchievement,
+  updateUserAchievement,
+  upsertUserAchievement,
+  getTodaysUnlockedAchievements
 };
